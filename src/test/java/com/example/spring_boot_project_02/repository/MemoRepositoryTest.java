@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.Commit;
 
 import java.awt.print.Pageable;
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -66,6 +68,32 @@ public class MemoRepositoryTest {
             log.info(memo);
         }
     }
+
+    @Test
+    public void testQueryMethod() {
+        List<Memo> list = memoRepository.findByMnoBetweenOrderByMnoDesc(70L, 80L);
+        for (Memo memo : list) {
+            log.info(memo);
+        }
+    }
+
+    @Test
+    @Transactional
+    @Commit
+    public void testDeleteQueryMethods() {
+        memoRepository.deleteMemoByMnoLessThan(10L);
+
+        Pageable pageable = (Pageable) PageRequest.of(0, 10);
+        Page<Memo> memos = memoRepository.findAll((org.springframework.data.domain.Pageable) pageable);
+        memos.forEach(memo -> log.info(memo));
+    }
+
+    @Test
+    public void testGetListDesc() {
+        List<Memo> memos = memoRepository.getListDesc();
+        memos.forEach(m -> log.info(m));
+    }
+
 
 }
 
